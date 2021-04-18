@@ -2,10 +2,43 @@
 
 // Dependencies
 const http = require("http");
+const https = require("https");
 const url = require("url");
 const StringDecoder = require("string_decoder").StringDecoder;
 
-var server = http.createServer(function (req, res) {
+var config = require("./config");
+var fs = require("fs");
+
+// Instantiate the http server
+var httpServer = http.createServer(function (req, res) {
+  unifiedServer(req, res);
+});
+
+// Start the http server
+httpServer.listen(config.httpPort, function () {
+  console.log(
+    `Server started on ${config.httpPort} port in ${config.envName} mode`
+  );
+});
+
+// Instantiate the https server
+var httpsServerOptions = {
+  key: fs.readFileSync("./https/key.pem"),
+  cert: fs.readFileSync("./https/cert.pem"),
+};
+var httpsServer = https.createServer(httpsServerOptions, function (req, res) {
+  unifiedServer(req, res);
+});
+
+// Start the https server
+httpsServer.listen(config.httpsPort, function () {
+  console.log(
+    `Server started on ${config.httpsPort} port in ${config.envName} mode`
+  );
+});
+
+// All the server logic for both the http and https server
+var unifiedServer = function (req, res) {
   //Get url and parsed it. True - create query string object
   var parsedUrl = url.parse(req.url, true);
 
@@ -71,27 +104,22 @@ var server = http.createServer(function (req, res) {
       console.log(`Response: `, statusCode, payloadString);
     });
   });
-});
-
-server.listen(3000, function () {
-  console.log("Server started on 3000 port");
-});
-
-// Define handlers
-
-var handlers = {};
-
-handlers.sample = function (data, callback) {
-  // Callback a http status code, and  a payload object
-  callback(406, { name: "sample handler" });
 };
 
+// Define handlers
+var handlers = {};
+
+// Ping handler
+handlers.ping = function (data, callback) {
+  callback(200);
+};
+
+// Not found handler
 handlers.notFound = function (data, callback) {
   callback(404);
 };
 
 // Define a request router
-
 var router = {
-  sample: handlers.sample,
+  ping: handlers.ping,
 };
