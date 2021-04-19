@@ -7,9 +7,10 @@ const url = require("url");
 const StringDecoder = require("string_decoder").StringDecoder;
 var fs = require("fs");
 
-var config = require("./config");
+var config = require("./lib/config");
 var _data = require("./lib/data");
 var handlers = require("./lib/handlers");
+var helpers = require("./lib/helpers");
 // TESTING
 // @TODO delete this
 
@@ -97,7 +98,7 @@ var unifiedServer = function (req, res) {
       queryStringObject: queryStringObject,
       method: method,
       headers: headers,
-      payload: buffer,
+      payload: helpers.parseJsonToObject(buffer),
     };
 
     // Route request to handler specified in the router
@@ -117,12 +118,12 @@ var unifiedServer = function (req, res) {
       res.end(payloadString);
 
       // Log the request path
-      console.log(`Path: ${trimmedPath}`);
-      console.log(`Method: ${method}`);
-      console.log(`Query params: `, queryStringObject);
-      console.log(`Headers: `, headers);
-      console.log(`Payload: `, buffer);
-      console.log(`Response: `, statusCode, payloadString);
+      // console.log(`Path: ${trimmedPath}`);
+      // console.log(`Method: ${method}`);
+      // console.log(`Query params: `, queryStringObject);
+      // console.log(`Headers: `, headers);
+      // console.log(`Payload: `, buffer);
+      // console.log(`Response: `, statusCode, payloadString);
     });
   });
 };
