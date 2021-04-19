@@ -9,7 +9,7 @@ var fs = require("fs");
 
 var config = require("./config");
 var _data = require("./lib/data");
-
+var handlers = require("./lib/handlers");
 // TESTING
 // @TODO delete this
 
@@ -127,20 +127,8 @@ var unifiedServer = function (req, res) {
   });
 };
 
-// Define handlers
-var handlers = {};
-
-// Ping handler
-handlers.ping = function (data, callback) {
-  callback(200);
-};
-
-// Not found handler
-handlers.notFound = function (data, callback) {
-  callback(404);
-};
-
 // Define a request router
 var router = {
   ping: handlers.ping,
+  users: handlers.users,
 };
